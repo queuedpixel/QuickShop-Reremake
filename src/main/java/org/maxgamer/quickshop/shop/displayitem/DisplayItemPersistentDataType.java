@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.maxgamer.quickshop.shop;
+package org.maxgamer.quickshop.shop.displayitem;
 
 import com.google.gson.Gson;
 import org.bukkit.Material;
@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataAdapterContext;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
+import org.maxgamer.quickshop.shop.ShopProtectionFlag;
 import org.maxgamer.quickshop.util.Util;
 
 public class DisplayItemPersistentDataType

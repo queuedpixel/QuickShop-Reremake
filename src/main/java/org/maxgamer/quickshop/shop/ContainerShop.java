@@ -38,6 +38,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.event.*;
+import org.maxgamer.quickshop.shop.displayitem.ArmorStandDisplayItem;
+import org.maxgamer.quickshop.shop.displayitem.DisplayItem;
+import org.maxgamer.quickshop.shop.displayitem.RealDisplayItem;
+import org.maxgamer.quickshop.shop.displayitem.VirtualDisplayItem;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.Util;
 
@@ -370,7 +374,7 @@ public class ContainerShop implements Shop {
      * @return True if the ItemStack is the same (Excludes amounts)
      */
     @Override
-    public boolean matches(@Nullable ItemStack item) {
+    public boolean matches(@NotNull ItemStack item) {
         return plugin.getItemMatcher().matches(this.item, item);
     }
 
@@ -621,9 +625,10 @@ public class ContainerShop implements Shop {
     /**
      * @return The durability of the item
      */
+    @SuppressWarnings("ConstantConditions")
     @Override
-    public short getDurability() {
-        return (short) ((Damageable) this.item.getItemMeta()).getDamage();
+    public int getDurability() {
+        return this.item.hasItemMeta() ? ((Damageable) this.item.getItemMeta()).getDamage() : 0;
     }
 
     /**
@@ -891,6 +896,7 @@ public class ContainerShop implements Shop {
      *
      * <p>**NOT A DEEP CLONE**
      */
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public @NotNull ContainerShop clone() {
         return new ContainerShop(this);

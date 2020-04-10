@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.maxgamer.quickshop.shop;
+package org.maxgamer.quickshop.shop.displayitem;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -39,6 +39,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.event.ShopDisplayItemSpawnEvent;
+import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.ShopChunk;
 import org.maxgamer.quickshop.util.Util;
 
 import java.lang.reflect.InvocationTargetException;

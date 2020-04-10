@@ -17,10 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.maxgamer.quickshop.shop;
+package org.maxgamer.quickshop.shop.displayitem;
 
-import java.util.Objects;
-import java.util.UUID;
 import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,7 +31,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.event.ShopDisplayItemDespawnEvent;
 import org.maxgamer.quickshop.event.ShopDisplayItemSpawnEvent;
+import org.maxgamer.quickshop.shop.Shop;
 import org.maxgamer.quickshop.util.Util;
+
+import java.util.Objects;
+import java.util.UUID;
 
 @ToString
 public class RealDisplayItem extends DisplayItem {
@@ -46,7 +48,7 @@ public class RealDisplayItem extends DisplayItem {
      *
      * @param shop The shop (See Shop)
      */
-    RealDisplayItem(@NotNull Shop shop) {
+    public RealDisplayItem(@NotNull Shop shop) {
         super(shop);
 
         // this.displayLoc = shop.getLocation().clone().add(0.5, 1.2, 0.5);

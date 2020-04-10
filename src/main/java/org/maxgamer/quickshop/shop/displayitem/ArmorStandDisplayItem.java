@@ -17,9 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.maxgamer.quickshop.shop;
+package org.maxgamer.quickshop.shop.displayitem;
 
-import java.util.Objects;
 import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,7 +34,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.event.ShopDisplayItemDespawnEvent;
 import org.maxgamer.quickshop.event.ShopDisplayItemSpawnEvent;
+import org.maxgamer.quickshop.shop.Shop;
 import org.maxgamer.quickshop.util.Util;
+
+import java.util.Objects;
 
 @ToString
 public class ArmorStandDisplayItem extends DisplayItem {
@@ -44,7 +46,7 @@ public class ArmorStandDisplayItem extends DisplayItem {
     private volatile ArmorStand armorStand;
 
 
-    ArmorStandDisplayItem(@NotNull Shop shop) {
+    public ArmorStandDisplayItem(@NotNull Shop shop) {
         super(shop);
     }
 

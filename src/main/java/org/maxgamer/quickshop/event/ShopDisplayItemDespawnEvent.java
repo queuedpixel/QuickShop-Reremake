@@ -23,9 +23,9 @@ import lombok.Getter;
 import org.bukkit.event.Cancellable;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.maxgamer.quickshop.shop.DisplayItem;
-import org.maxgamer.quickshop.shop.DisplayType;
 import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.displayitem.DisplayItem;
+import org.maxgamer.quickshop.shop.displayitem.DisplayType;
 
 /**
  * This event is called after DisplayItem removed

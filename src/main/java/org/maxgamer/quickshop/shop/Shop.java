@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.maxgamer.quickshop.shop.displayitem.DisplayItem;
 
 import java.util.List;
 import java.util.UUID;
@@ -163,7 +164,7 @@ public interface Shop {
      *
      * @return Shop's item durability
      */
-    short getDurability();
+    int getDurability();
 
     /**
      * Get shop item's ItemStack

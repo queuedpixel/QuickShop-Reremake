@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.maxgamer.quickshop.shop;
+package org.maxgamer.quickshop.shop.displayitem;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -28,6 +28,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
+import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.ShopProtectionFlag;
 import org.maxgamer.quickshop.util.Util;
 
 import java.util.ArrayList;
@@ -141,6 +143,7 @@ public abstract class DisplayItem {
             return false;
         }
         ItemMeta iMeta = itemStack.getItemMeta();
+        //noinspection ConstantConditions
         if (!iMeta.hasLore()) {
             return false;
         }
@@ -179,14 +182,19 @@ public abstract class DisplayItem {
     public static ItemStack createGuardItemStack(@NotNull ItemStack itemStack, @NotNull Shop shop) {
         itemStack = itemStack.clone();
         itemStack.setAmount(1);
+        if (!itemStack.hasItemMeta()) {
+            return itemStack;
+        }
         ItemMeta iMeta = itemStack.getItemMeta();
         if (QuickShop.instance.getConfig().getBoolean("shop.display-item-use-name")) {
+            //noinspection ConstantConditions
             if (iMeta.hasDisplayName()) {
                 iMeta.setDisplayName(iMeta.getDisplayName());
             } else {
                 iMeta.setDisplayName(Util.getItemStackName(itemStack));
             }
         } else {
+            //noinspection ConstantConditions
             iMeta.setDisplayName(null);
         }
         java.util.List<String> lore = new ArrayList<>();

@@ -22,9 +22,9 @@ package org.maxgamer.quickshop.watcher;
 import lombok.Data;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.maxgamer.quickshop.QuickShop;
-import org.maxgamer.quickshop.shop.DisplayItem;
-import org.maxgamer.quickshop.shop.DisplayType;
 import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.displayitem.DisplayItem;
+import org.maxgamer.quickshop.shop.displayitem.DisplayType;
 
 @Data
 public class DisplayWatcher {

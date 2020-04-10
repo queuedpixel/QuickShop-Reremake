@@ -19,15 +19,16 @@
 
 package org.maxgamer.quickshop.listener;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.maxgamer.quickshop.shop.DisplayItem;
+import org.maxgamer.quickshop.shop.displayitem.DisplayItem;
 import org.maxgamer.quickshop.util.Util;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClearLaggListener implements Listener {
 
