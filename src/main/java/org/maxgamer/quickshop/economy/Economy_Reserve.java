@@ -28,6 +28,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -66,12 +67,12 @@ public class Economy_Reserve implements EconomyCore {
     /**
      * Deposits a given amount of money from thin air to the given username.
      *
-     * @param name The exact (case insensitive) username to give money to
+     * @param name   The exact (case insensitive) username to give money to
      * @param amount The amount to give them
      * @return True if success (Should be almost always)
      */
     @Override
-    public boolean deposit(UUID name, double amount) {
+    public boolean deposit(UUID name, IShopCost amount) {
         try {
             return Objects.requireNonNull(reserve).addHoldings(name, new BigDecimal(amount));
         } catch (Throwable throwable) {
@@ -89,7 +90,7 @@ public class Economy_Reserve implements EconomyCore {
      * @return The balance in human readable text.
      */
     @Override
-    public String format(double balance) {
+    public String format(IShopCost balance) {
         try {
             return Objects.requireNonNull(reserve).format(new BigDecimal(balance));
         } catch (Throwable throwable) {
@@ -100,7 +101,7 @@ public class Economy_Reserve implements EconomyCore {
         }
     }
 
-    private String formatInternal(double balance) {
+    private String formatInternal(IShopCost balance) {
         try {
             return QuickShop.instance.getConfig().getString("shop.alternate-currency-symbol") + balance;
         } catch (Exception e) {
@@ -115,7 +116,7 @@ public class Economy_Reserve implements EconomyCore {
      * @return Their current balance.
      */
     @Override
-    public double getBalance(UUID name) {
+    public IShopCost getBalance(UUID name) {
         try {
             return Objects.requireNonNull(reserve).getHoldings(name).doubleValue();
         } catch (Throwable throwable) {
@@ -129,13 +130,13 @@ public class Economy_Reserve implements EconomyCore {
     /**
      * Transfers the given amount of money from Player1 to Player2
      *
-     * @param from The player who is paying money
-     * @param to The player who is receiving money
+     * @param from   The player who is paying money
+     * @param to     The player who is receiving money
      * @param amount The amount to transfer
      * @return true if success (Payer had enough cash, receiver was able to receive the funds)
      */
     @Override
-    public boolean transfer(UUID from, UUID to, double amount) {
+    public boolean transfer(UUID from, UUID to, IShopCost amount) {
         try {
             return Objects.requireNonNull(reserve).transferHoldings(from, to, new BigDecimal(amount));
         } catch (Throwable throwable) {
@@ -149,12 +150,12 @@ public class Economy_Reserve implements EconomyCore {
     /**
      * Withdraws a given amount of money from the given username and turns it to thin air.
      *
-     * @param name The exact (case insensitive) username to take money from
+     * @param name   The exact (case insensitive) username to take money from
      * @param amount The amount to take from them
      * @return True if success, false if they didn't have enough cash
      */
     @Override
-    public boolean withdraw(UUID name, double amount) {
+    public boolean withdraw(UUID name, IShopCost amount) {
         try {
             if (!plugin.getConfig().getBoolean("shop.allow-economy-loan")) {
                 if (getBalance(name) < amount) {

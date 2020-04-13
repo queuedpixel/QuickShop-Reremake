@@ -19,12 +19,6 @@
 
 package org.maxgamer.quickshop.database;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.UUID;
-import java.util.function.Consumer;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +26,15 @@ import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.shop.Shop;
 import org.maxgamer.quickshop.shop.ShopModerator;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.Util;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * A Util to execute all SQLs.
@@ -237,9 +239,9 @@ public class DatabaseHelper {
     }
 
     public void updateShop(@NotNull String owner, @NotNull ItemStack item, int unlimited, int shopType,
-                           double price, int x, int y, int z, String world) {
+                           IShopCost price, int x, int y, int z, String world) {
         String sqlString = "UPDATE " + QuickShop.instance
-            .getDbPrefix() + "shops SET owner = ?, itemConfig = ?, unlimited = ?, type = ?, price = ? WHERE x = ? AND y = ? and z = ? and world = ?";
+                .getDbPrefix() + "shops SET owner = ?, itemConfig = ?, unlimited = ?, type = ?, price = ? WHERE x = ? AND y = ? and z = ? and world = ?";
         plugin.getDatabaseManager().add(new DatabaseTask(sqlString, ps -> {
             ps.setString(1, owner);
             ps.setString(2, Util.serialize(item));

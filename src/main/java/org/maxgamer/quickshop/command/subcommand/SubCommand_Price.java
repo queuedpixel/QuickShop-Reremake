@@ -19,21 +19,23 @@
 
 package org.maxgamer.quickshop.command.subcommand;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import org.jetbrains.annotations.NotNull;
-import org.maxgamer.quickshop.command.CommandProcesser;
 import org.maxgamer.quickshop.QuickShop;
+import org.maxgamer.quickshop.command.CommandProcesser;
 import org.maxgamer.quickshop.shop.ContainerShop;
 import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.Util;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 
 public class SubCommand_Price implements CommandProcesser {
 
@@ -41,21 +43,21 @@ public class SubCommand_Price implements CommandProcesser {
 
     @Override
     public void onCommand(
-        @NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] cmdArg) {
+            @NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] cmdArg) {
         if (!(sender instanceof Player)) {
-            MsgUtil.sendMessage(sender,"Can't run this command by Console");
+            MsgUtil.sendMessage(sender, "Can't run this command by Console");
             return;
         }
 
         final Player p = (Player) sender;
 
         if (cmdArg.length < 1) {
-            MsgUtil.sendMessage(sender,MsgUtil.getMessage("no-price-given", sender));
+            MsgUtil.sendMessage(sender, MsgUtil.getMessage("no-price-given", sender));
             return;
         }
 
-        final double price;
-        final double minPrice = plugin.getConfig().getDouble("shop.minimum-price");
+        final IShopCost price;
+        final IShopCost minPrice = plugin.getConfig().getDouble("shop.minimum-price");
 
         try {
             if (plugin.getConfig().getBoolean("whole-number-prices-only")) {
@@ -64,7 +66,7 @@ public class SubCommand_Price implements CommandProcesser {
                 } catch (NumberFormatException ex2) {
                     // input is number, but not Integer
                     Util.debugLog(ex2.getMessage());
-                    MsgUtil.sendMessage(p,MsgUtil.getMessage("not-a-integer", p, cmdArg[0]));
+                    MsgUtil.sendMessage(p, MsgUtil.getMessage("not-a-integer", p, cmdArg[0]));
                     return;
                 }
             } else {
@@ -96,7 +98,7 @@ public class SubCommand_Price implements CommandProcesser {
             }
         }
 
-        final double price_limit = plugin.getConfig().getDouble("shop.maximum-price");
+        final IShopCost price_limit = plugin.getConfig().getDouble("shop.maximum-price");
 
         if (price_limit != -1 && price > price_limit) {
             MsgUtil.sendMessage(p,
@@ -107,7 +109,7 @@ public class SubCommand_Price implements CommandProcesser {
             return;
         }
 
-        double fee = 0;
+        IShopCost fee = 0;
 
         if (plugin.isPriceChangeRequiresFee()) {
             fee = plugin.getConfig().getDouble("shop.fee-for-price-change");

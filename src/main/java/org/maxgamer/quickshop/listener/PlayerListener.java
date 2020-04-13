@@ -41,6 +41,7 @@ import org.maxgamer.quickshop.economy.Economy;
 import org.maxgamer.quickshop.shop.Info;
 import org.maxgamer.quickshop.shop.Shop;
 import org.maxgamer.quickshop.shop.ShopAction;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.Util;
 
@@ -127,8 +128,8 @@ public class PlayerListener implements Listener {
             shop.setSignText();
 
             final Economy eco = plugin.getEconomy();
-            final double price = shop.getPrice();
-            final double money = plugin.getEconomy().getBalance(p.getUniqueId());
+            final IShopCost price = shop.getPrice();
+            final IShopCost money = plugin.getEconomy().getBalance(p.getUniqueId());
 
             if (shop.isSelling()) {
                 int itemAmount = Math.min(Util.countSpace(p.getInventory(), shop.getItem()), (int) Math.floor(money / price));
@@ -144,7 +145,7 @@ public class PlayerListener implements Listener {
                     MsgUtil.sendMessage(p, MsgUtil.getMessage("how-many-buy", p, "" + itemAmount));
                 }
             } else {
-                final double ownerBalance = eco.getBalance(shop.getOwner());
+                final IShopCost ownerBalance = eco.getBalance(shop.getOwner());
                 int items = Util.countItems(p.getInventory(), shop.getItem());
                 final int ownerCanAfford = (int) (ownerBalance / shop.getPrice());
 

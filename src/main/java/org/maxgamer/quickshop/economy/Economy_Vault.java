@@ -33,6 +33,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.Util;
 
 import java.util.Objects;
@@ -102,7 +103,7 @@ public class Economy_Vault implements EconomyCore, Listener {
     }
 
     @Override
-    public boolean deposit(@NotNull UUID name, double amount) {
+    public boolean deposit(@NotNull UUID name, IShopCost amount) {
         if (!checkValid()) {
             return false;
         }
@@ -123,7 +124,7 @@ public class Economy_Vault implements EconomyCore, Listener {
     }
 
     @Override
-    public String format(double balance) {
+    public String format(IShopCost balance) {
         if (!checkValid()) {
             return "Error";
         }
@@ -139,7 +140,7 @@ public class Economy_Vault implements EconomyCore, Listener {
         }
     }
 
-    private String formatInternal(double balance) {
+    private String formatInternal(IShopCost balance) {
         if (!checkValid()) {
             return "Error";
         }
@@ -151,7 +152,7 @@ public class Economy_Vault implements EconomyCore, Listener {
     }
 
     @Override
-    public double getBalance(@NotNull UUID name) {
+    public IShopCost getBalance(@NotNull UUID name) {
         if (!checkValid()) {
             return 0.0;
         }
@@ -178,7 +179,7 @@ public class Economy_Vault implements EconomyCore, Listener {
     }
 
     @Override
-    public boolean transfer(@NotNull UUID from, @NotNull UUID to, double amount) {
+    public boolean transfer(@NotNull UUID from, @NotNull UUID to, IShopCost amount) {
         if (!checkValid()) {
             return false;
         }
@@ -210,7 +211,7 @@ public class Economy_Vault implements EconomyCore, Listener {
     }
 
     @Override
-    public boolean withdraw(@NotNull UUID name, double amount) {
+    public boolean withdraw(@NotNull UUID name, IShopCost amount) {
         if (!checkValid()) {
             return false;
         }

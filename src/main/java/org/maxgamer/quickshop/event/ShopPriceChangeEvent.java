@@ -23,6 +23,7 @@ import lombok.Getter;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
 import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 
 /**
  * Calling when shop price was changed, Can't cancel
@@ -30,10 +31,10 @@ import org.maxgamer.quickshop.shop.Shop;
 public class ShopPriceChangeEvent extends QSEvent implements Cancellable {
 
     @Getter
-    private final double newPrice;
+    private final IShopCost newPrice;
 
     @Getter
-    private final double oldPrice;
+    private final IShopCost oldPrice;
 
     @Getter
     @NotNull
@@ -44,11 +45,11 @@ public class ShopPriceChangeEvent extends QSEvent implements Cancellable {
     /**
      * Will call when shop price was changed.
      *
-     * @param shop Target shop
+     * @param shop     Target shop
      * @param oldPrice The old shop price
      * @param newPrice The new shop price
      */
-    public ShopPriceChangeEvent(@NotNull Shop shop, double oldPrice, double newPrice) {
+    public ShopPriceChangeEvent(@NotNull Shop shop, IShopCost oldPrice, IShopCost newPrice) {
         this.shop = shop;
         this.oldPrice = oldPrice;
         this.newPrice = newPrice;

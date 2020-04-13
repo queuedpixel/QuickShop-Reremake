@@ -201,8 +201,7 @@ public abstract class DisplayItem {
         ShopProtectionFlag shopProtectionFlag = createShopProtectionFlag(itemStack, shop);
         String protectFlag = gson.toJson(shopProtectionFlag);
         for (int i = 0; i < 21; i++) {
-            lore.add(
-                protectFlag); // Create 20 lines lore to make sure no stupid plugin accident remove mark.
+            lore.add(protectFlag); // Create 20 lines lore to make sure no stupid plugin accident remove mark.
         }
         iMeta.setLore(lore);
         itemStack.setItemMeta(iMeta);

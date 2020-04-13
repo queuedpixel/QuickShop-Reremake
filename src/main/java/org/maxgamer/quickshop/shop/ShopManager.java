@@ -40,6 +40,7 @@ import org.maxgamer.quickshop.event.ShopCreateEvent;
 import org.maxgamer.quickshop.event.ShopPreCreateEvent;
 import org.maxgamer.quickshop.event.ShopPurchaseEvent;
 import org.maxgamer.quickshop.event.ShopSuccessPurchaseEvent;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.Util;
 
@@ -271,8 +272,8 @@ public class ShopManager {
      * @param d price
      * @return formated price
      */
-    public @Nullable String format(double d) {
-        return plugin.getEconomy().format(d);
+    public @Nullable String format(IShopCost d) {
+        return d.getPriceString();
     }
 
     /**
@@ -564,18 +565,18 @@ public class ShopManager {
             return; // Cancelled
         }
         // Money handling
-        double tax = getTax(shop,p);
-        double total = amount * shop.getPrice();
+        double tax = getTax(shop, p);
+        IShopCost total = amount * shop.getPrice();
 
         boolean shouldPayOwner = !shop.isUnlimited() || (plugin.getConfig().getBoolean("shop.pay-unlimited-shop-owners") && shop.isUnlimited());
         if (shouldPayOwner) {
             boolean successA = eco.withdraw(shop.getOwner(), total); // Withdraw owner's money
             if (!successA) {
-                MsgUtil.sendMessage(p,MsgUtil.getMessage("the-owner-cant-afford-to-buy-from-you", p, Objects.requireNonNull(format(total)), Objects.requireNonNull(format(eco.getBalance(shop.getOwner())))));
+                MsgUtil.sendMessage(p, MsgUtil.getMessage("the-owner-cant-afford-to-buy-from-you", p, Objects.requireNonNull(format(total)), Objects.requireNonNull(Util.format(eco.getBalance(shop.getOwner())))));
                 return;
             }
         }
-        double depositMoney = total * (1 - tax);
+        IShopCost depositMoney = total * (1 - tax);
         boolean successB = eco.deposit(p.getUniqueId(), depositMoney); // Deposit player's money
         if (!successB) {
             plugin.getLogger().warning("Failed to deposit the money " + depositMoney + " to player " + e.getPlayer().getName());
@@ -677,14 +678,14 @@ public class ShopManager {
                 }
                 Material signType = info.getSignBlock().getType();
                 if (!Util.isAir(signType) && signType != Material.WATER && !plugin.getConfig().getBoolean("shop.allow-shop-without-space-for-sign")) {
-                    MsgUtil.sendMessage(p,MsgUtil.getMessage("failed-to-put-sign", p));
+                    MsgUtil.sendMessage(p, MsgUtil.getMessage("failed-to-put-sign", p));
                     return;
                 }
             }
 
             // Price per item
-            double price;
-            double minPrice = plugin.getConfig().getDouble("shop.minimum-price");
+            IShopCost price;
+            IShopCost minPrice = plugin.getConfig().getDouble("shop.minimum-price");
             try {
                 if (plugin.getConfig().getBoolean("whole-number-prices-only")) {
                     try {
@@ -692,7 +693,7 @@ public class ShopManager {
                     } catch (NumberFormatException ex2) {
                         // input is number, but not Integer
                         Util.debugLog(ex2.getMessage());
-                        MsgUtil.sendMessage(p,MsgUtil.getMessage("not-a-integer", p, message));
+                        MsgUtil.sendMessage(p, MsgUtil.getMessage("not-a-integer", p, message));
                         return;
                     }
                 } else {
@@ -728,7 +729,7 @@ public class ShopManager {
                 }
             }
 
-            double maximumPrice = plugin.getConfig().getInt("shop.maximum-price");
+            IShopCost maximumPrice = plugin.getConfig().getInt("shop.maximum-price");
             if (maximumPrice != -1) {
                 if (price > maximumPrice) {
                     MsgUtil.sendMessage(p,MsgUtil.getMessage("price-too-high", p, (decFormat) ? MsgUtil.decimalFormat(maximumPrice) : "" + maximumPrice));
@@ -746,7 +747,7 @@ public class ShopManager {
                 }
             }
 
-            double createCost = plugin.getConfig().getDouble("shop.cost");
+            IShopCost createCost = plugin.getConfig().getDouble("shop.cost");
             // Create the sample shop.
             ContainerShop shop = new ContainerShop(info.getLocation(), price, info.getItem(), new ShopModerator(p.getUniqueId()), false, ShopType.SELLING);
 
@@ -831,7 +832,7 @@ public class ShopManager {
         }
         double tax = getTax(shop,p);
         // Money handling
-        double total = amount * shop.getPrice();
+        IShopCost total = amount * shop.getPrice();
 
 
         boolean successA = eco.withdraw(p.getUniqueId(), total); // Withdraw owner's money
@@ -841,7 +842,7 @@ public class ShopManager {
         }
         boolean shouldPayOwner = !shop.isUnlimited() || (plugin.getConfig().getBoolean("shop.pay-unlimited-shop-owners") && shop.isUnlimited());
         if (shouldPayOwner) {
-            double depositMoney = total * (1 - tax);
+            IShopCost depositMoney = total * (1 - tax);
             boolean successB = eco.deposit(shop.getOwner(), depositMoney);
             if (!successB) {
                 plugin.getLogger().warning("Failed to deposit the money for player " + Bukkit.getOfflinePlayer(shop.getOwner()));
@@ -924,7 +925,7 @@ public class ShopManager {
                     int shopHaveSpaces = Util.countSpace(((ContainerShop) shop).getInventory(), shop.getItem());
                     int invHaveItems = Util.countItems(p.getInventory(), shop.getItem());
                     // Check if shop owner has enough money
-                    double ownerBalance = eco.getBalance(shop.getOwner());
+                    IShopCost ownerBalance = eco.getBalance(shop.getOwner());
                     int ownerCanAfford;
 
                     if (shop.getPrice() != 0) {
@@ -985,18 +986,18 @@ public class ShopManager {
                         amount = Util.countSpace(p.getInventory(), shop.getItem());
                     }
                     // typed 'all', check if player has enough money than price * amount
-                    double price = shop.getPrice();
-                    double balance = eco.getBalance(p.getUniqueId());
+                    IShopCost price = shop.getPrice();
+                    IShopCost balance = eco.getBalance(p.getUniqueId());
                     amount = Math.min(amount, (int) Math.floor(balance / price));
                     if (amount < 1) { // typed 'all' but the auto set amount is 0
                         // when typed 'all' but player can't buy any items
                         if (!shop.isUnlimited() && shopHaveItems < 1) {
                             // but also the shop's stock is 0
-                            MsgUtil.sendMessage(p,MsgUtil.getMessage("shop-stock-too-low", p, "" + shop.getRemainingStock(), Util.getItemStackName(shop.getItem())));
+                            MsgUtil.sendMessage(p, MsgUtil.getMessage("shop-stock-too-low", p, "" + shop.getRemainingStock(), Util.getItemStackName(shop.getItem())));
                         } else {
                             // when if player's inventory is full
                             if (invHaveSpaces <= 0) {
-                                MsgUtil.sendMessage(p,MsgUtil.getMessage("not-enough-space", p, String.valueOf(invHaveSpaces)));
+                                MsgUtil.sendMessage(p, MsgUtil.getMessage("not-enough-space", p, String.valueOf(invHaveSpaces)));
                                 return;
                             }
                             MsgUtil.sendMessage(p,MsgUtil.getMessage("you-cant-afford-to-buy", p, Objects.requireNonNull(format(price)), Objects.requireNonNull(format(balance))));

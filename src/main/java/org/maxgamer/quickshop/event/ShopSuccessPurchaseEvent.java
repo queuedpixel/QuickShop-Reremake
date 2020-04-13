@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.jetbrains.annotations.NotNull;
 import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 
 public class ShopSuccessPurchaseEvent extends QSEvent implements Cancellable {
 
@@ -71,7 +72,7 @@ public class ShopSuccessPurchaseEvent extends QSEvent implements Cancellable {
      *
      * @return the total money with calculate tax
      */
-    public double getBalance() {
+    public IShopCost getBalance() {
         return this.total * (1 - tax);
     }
 

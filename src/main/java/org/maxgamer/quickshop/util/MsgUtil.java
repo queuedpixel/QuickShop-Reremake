@@ -49,6 +49,7 @@ import org.maxgamer.quickshop.ServiceInjector;
 import org.maxgamer.quickshop.fileportlek.old.IFile;
 import org.maxgamer.quickshop.fileportlek.old.JSONFile;
 import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.language.game.GameLanguage;
 import org.maxgamer.quickshop.util.language.game.MojangGameLanguageImpl;
 
@@ -717,7 +718,7 @@ public class MsgUtil {
         }
     }
 
-    public static String decimalFormat(double value) {
+    public static String decimalFormat(IShopCost value) {
         return decimalFormat.format(value);
     }
 

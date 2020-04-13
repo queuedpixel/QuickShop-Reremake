@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.shop.displayitem.DisplayItem;
 
 import java.util.List;
@@ -224,14 +225,14 @@ public interface Shop {
      *
      * @return Price
      */
-    double getPrice();
+    IShopCost getPrice();
 
     /**
      * Set shop's new price
      *
      * @param paramDouble New price
      */
-    void setPrice(double paramDouble);
+    void setPrice(IShopCost paramDouble);
 
     /**
      * Get shop remaining space.

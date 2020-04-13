@@ -24,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.Util;
 
@@ -48,7 +49,7 @@ public class OngoingFeeWatcher extends BukkitRunnable {
             Util.debugLog("Economy hadn't get ready.");
             return;
         }
-        int cost = plugin.getConfig().getInt("shop.ongoing-fee.cost-per-shop");
+        IShopCost cost = plugin.getConfig().getInt("shop.ongoing-fee.cost-per-shop");
         boolean allowLoan = plugin.getConfig().getBoolean("shop.allow-economy-loan");
         boolean ignoreUnlimited = plugin.getConfig().getBoolean("shop.ongoing-fee.ignore-unlimited");
         for (Shop shop : plugin.getShopManager().getAllShops()) {

@@ -38,6 +38,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.event.*;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
+import org.maxgamer.quickshop.shop.cost.MoneyCost;
 import org.maxgamer.quickshop.shop.displayitem.ArmorStandDisplayItem;
 import org.maxgamer.quickshop.shop.displayitem.DisplayItem;
 import org.maxgamer.quickshop.shop.displayitem.RealDisplayItem;
@@ -46,7 +48,6 @@ import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.Util;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 
 /**
@@ -76,7 +77,8 @@ public class ContainerShop implements Shop {
 
     private QuickShop plugin;
 
-    private double price;
+
+    private IShopCost price;
 
     private ShopType shopType;
 
@@ -99,15 +101,14 @@ public class ContainerShop implements Shop {
      *
      * @param location  The location of the chest block
      * @param price     The cost per item
-     * @param item      The itemstack with the properties we want. This is .cloned, no need to worry about
-     *                  references
+     * @param item      The itemstack with the properties we want. This is .cloned, no need to worry about references
      * @param moderator The modertators
      * @param type      The shop type
      * @param unlimited The unlimited
      */
     public ContainerShop(
             @NotNull Location location,
-            double price,
+            IShopCost price,
             @NotNull ItemStack item,
             @NotNull ShopModerator moderator,
             boolean unlimited,
@@ -405,14 +406,10 @@ public class ContainerShop implements Shop {
         this.isLoaded = true;
         Objects.requireNonNull(plugin.getShopManager().getLoadedShops()).add(this);
         plugin.getShopContainerWatcher().scheduleCheck(this);
-        // check price restriction
-        Entry<Double, Double> priceRestriction = Util.getPriceRestriction(this.getMaterial());
-        if (priceRestriction != null) {
-            if (price < priceRestriction.getKey()) {
-                price = priceRestriction.getKey();
-                this.update();
-            } else if (price > priceRestriction.getValue()) {
-                price = priceRestriction.getValue();
+
+        if (price instanceof MoneyCost) {
+            // check price restriction
+            if (price.check(Util.getPriceRestriction(this.getMaterial()))) {
                 this.update();
             }
         }
@@ -575,9 +572,9 @@ public class ContainerShop implements Shop {
                 MsgUtil.getMessageOfflinePlayer(
                         "signs.item", player, Util.getItemStackName(this.getItem()));
         if (plugin.getConfig().getBoolean("shop.allow-stacks") && this.getItem().getAmount() > 1) { //FIXME: A trash impl, need use a better way
-            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.stack-price", player, Util.format(this.getPrice()*this.getItem().getAmount()));
+            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.stack-price", player, this.getPrice().getPriceString(this.getItem().getAmount()));
         } else {
-            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.price", player, Util.format(this.getPrice()));
+            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.price", player, this.getPrice().getPriceString(1));
 
         }
         this.setSignText(lines);
@@ -703,7 +700,7 @@ public class ContainerShop implements Shop {
      * @return The price per item this shop is selling
      */
     @Override
-    public double getPrice() {
+    public IShopCost getPrice() {
         return this.price;
     }
 
@@ -713,13 +710,13 @@ public class ContainerShop implements Shop {
      * @param price The new price of the shop.
      */
     @Override
-    public void setPrice(double price) {
+    public void setPrice(IShopCost price) {
         ShopPriceChangeEvent event = new ShopPriceChangeEvent(this, this.price, price);
         if (Util.fireCancellableEvent(event)) {
             Util.debugLog("A plugin cancelled the price change event.");
             return;
         }
-        this.price = price;
+        this.price.update(price);
         setSignText();
         update();
     }
@@ -988,7 +985,7 @@ public class ContainerShop implements Shop {
      * this is buying/selling.
      */
     public boolean isDoubleShop() {
-        ContainerShop nextTo = this.getAttachedShop();
+        Shop nextTo = this.getAttachedShop();
         if (nextTo == null) {
             return false;
         }
@@ -1009,7 +1006,7 @@ public class ContainerShop implements Shop {
      * @return the shop that shares it's inventory with this one. Will return null if this shop is not
      * attached to another.
      */
-    public @Nullable ContainerShop getAttachedShop() {
+    public @Nullable Shop getAttachedShop() {
         Block c = Util.getSecondHalf(this.getLocation().getBlock());
         if (c == null) {
             return null;

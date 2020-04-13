@@ -28,6 +28,8 @@ import org.maxgamer.quickshop.util.Util;
 
 import java.util.UUID;
 
+double;
+
 public class Economy implements EconomyCore {
 
     @Getter

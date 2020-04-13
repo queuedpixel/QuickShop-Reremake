@@ -23,6 +23,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.maxgamer.quickshop.QuickShop;
+import org.maxgamer.quickshop.shop.cost.IShopCost;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.Util;
 
@@ -36,31 +37,31 @@ public class Economy_Mixed implements EconomyCore {
     }
 
     @Override
-    public boolean deposit(UUID name, double amount) {
+    public boolean deposit(UUID name, IShopCost amount) {
         if (getBalance(name) < amount) {
             return false;
         }
         Bukkit.dispatchCommand(
-            Bukkit.getConsoleSender(),
-            MsgUtil.fillArgs(
-                QuickShop.instance.getConfig().getString("mixedeconomy.deposit"),
-                Bukkit.getOfflinePlayer(name).getName(),
-                String.valueOf(amount)));
+                Bukkit.getConsoleSender(),
+                MsgUtil.fillArgs(
+                        QuickShop.instance.getConfig().getString("mixedeconomy.deposit"),
+                        Bukkit.getOfflinePlayer(name).getName(),
+                        String.valueOf(amount)));
         return true;
     }
 
     @Override
-    public String format(double balance) {
+    public String format(IShopCost balance) {
         return Util.format(balance);
     }
 
     @Override
-    public double getBalance(UUID name) {
+    public IShopCost getBalance(UUID name) {
         return core.getBalance(name);
     }
 
     @Override
-    public boolean transfer(UUID from, UUID to, double amount) {
+    public boolean transfer(UUID from, UUID to, IShopCost amount) {
         boolean result;
         result = withdraw(from, amount);
         if (!result) {
@@ -74,16 +75,16 @@ public class Economy_Mixed implements EconomyCore {
     }
 
     @Override
-    public boolean withdraw(UUID name, double amount) {
+    public boolean withdraw(UUID name, IShopCost amount) {
         if (getBalance(name) > amount) {
             return false;
         }
         Bukkit.dispatchCommand(
-            Bukkit.getConsoleSender(),
-            MsgUtil.fillArgs(
-                QuickShop.instance.getConfig().getString("mixedeconomy.withdraw"),
-                Bukkit.getOfflinePlayer(name).getName(),
-                String.valueOf(amount)));
+                Bukkit.getConsoleSender(),
+                MsgUtil.fillArgs(
+                        QuickShop.instance.getConfig().getString("mixedeconomy.withdraw"),
+                        Bukkit.getOfflinePlayer(name).getName(),
+                        String.valueOf(amount)));
         return true;
     }
 
