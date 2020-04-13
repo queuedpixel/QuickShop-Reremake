@@ -84,6 +84,8 @@ public class ContainerShop implements Shop {
 
     private boolean unlimited;
 
+    private long lastChangedAt;
+
     private ContainerShop(@NotNull ContainerShop s) {
         this.displayItem = s.displayItem;
         this.shopType = s.shopType;
@@ -94,6 +96,7 @@ public class ContainerShop implements Shop {
         this.moderator = s.moderator;
         this.price = s.price;
         this.isLoaded = s.isLoaded;
+        this.lastChangedAt = System.currentTimeMillis();
     }
 
     /**
@@ -159,6 +162,7 @@ public class ContainerShop implements Shop {
         } else {
             Util.debugLog("The display was disabled.");
         }
+        this.lastChangedAt = System.currentTimeMillis();
     }
 
     /**
@@ -186,6 +190,7 @@ public class ContainerShop implements Shop {
 
     @Override
     public boolean addStaff(@NotNull UUID player) {
+        this.lastChangedAt = System.currentTimeMillis();
         boolean result = this.moderator.addStaff(player);
         update();
         if (result) {
@@ -305,6 +310,7 @@ public class ContainerShop implements Shop {
 
     @Override
     public void clearStaffs() {
+        this.lastChangedAt = System.currentTimeMillis();
         this.moderator.clearStaffs();
         Bukkit.getPluginManager().callEvent(new ShopModeratorChangedEvent(this, this.moderator));
         update();
@@ -312,6 +318,7 @@ public class ContainerShop implements Shop {
 
     @Override
     public boolean delStaff(@NotNull UUID player) {
+        this.lastChangedAt = System.currentTimeMillis();
         boolean result = this.moderator.delStaff(player);
         update();
         if (result) {
@@ -335,6 +342,7 @@ public class ContainerShop implements Shop {
      */
     @Override
     public void delete(boolean memoryOnly) {
+        this.lastChangedAt = System.currentTimeMillis();
         ShopDeleteEvent shopDeleteEvent = new ShopDeleteEvent(this, memoryOnly);
         if (Util.fireCancellableEvent(shopDeleteEvent)) {
             Util.debugLog("Shop deletion was canceled because a plugin canceled it.");
@@ -375,7 +383,7 @@ public class ContainerShop implements Shop {
      * @return True if the ItemStack is the same (Excludes amounts)
      */
     @Override
-    public boolean matches(@NotNull ItemStack item) {
+    public boolean matches(@Nullable ItemStack item) {
         return plugin.getItemMatcher().matches(this.item, item);
     }
 
@@ -406,10 +414,11 @@ public class ContainerShop implements Shop {
         this.isLoaded = true;
         Objects.requireNonNull(plugin.getShopManager().getLoadedShops()).add(this);
         plugin.getShopContainerWatcher().scheduleCheck(this);
-
+        // check price restriction
         if (price instanceof MoneyCost) {
             // check price restriction
             if (price.check(Util.getPriceRestriction(this.getMaterial()))) {
+                this.lastChangedAt = System.currentTimeMillis();
                 this.update();
             }
         }
@@ -545,36 +554,57 @@ public class ContainerShop implements Shop {
         OfflinePlayer player = Bukkit.getOfflinePlayer(this.getOwner());
         lines[0] = MsgUtil.getMessageOfflinePlayer("signs.header", player, this.ownerName());
         if (this.isSelling()) {
-            if (this.getRemainingStock() == -1) {
-                lines[1] =
-                        MsgUtil.getMessageOfflinePlayer(
-                                "signs.selling",
-                                player,
-                                "" + MsgUtil.getMessageOfflinePlayer("signs.unlimited", player));
+            if (this.getItem().getAmount() > 1) {
+                if (this.getRemainingStock() == -1) {
+                    lines[1] = MsgUtil.getMessageOfflinePlayer("signs.stack-selling", player, "" + MsgUtil.getMessageOfflinePlayer("signs.unlimited", player));
+                } else {
+                    lines[1] =
+                            MsgUtil.getMessageOfflinePlayer("signs.stack-selling", player, "" + ((this.getRemainingStock() != 0) ? this.getRemainingStock() /this.getItem().getAmount() : 0));
+                }
             } else {
-                lines[1] =
-                        MsgUtil.getMessageOfflinePlayer("signs.selling", player, "" + this.getRemainingStock());
+                if (this.getRemainingStock() == -1) {
+                    lines[1] = MsgUtil.getMessageOfflinePlayer("signs.selling", player, "" + MsgUtil.getMessageOfflinePlayer("signs.unlimited", player));
+                } else {
+                    lines[1] =
+                            MsgUtil.getMessageOfflinePlayer("signs.selling", player, "" + this.getRemainingStock());
+                }
             }
 
+
         } else if (this.isBuying()) {
-            if (this.getRemainingSpace() == -1) {
-                lines[1] =
-                        MsgUtil.getMessageOfflinePlayer(
-                                "signs.buying",
-                                player,
-                                "" + MsgUtil.getMessageOfflinePlayer("signs.unlimited", player));
+            if (this.getItem().getAmount() > 1) {
+                if (this.getRemainingSpace() == -1) {
+                    lines[1] = MsgUtil.getMessageOfflinePlayer("signs.stack-buying", player, "" + MsgUtil.getMessageOfflinePlayer("signs.unlimited", player));
+                } else {
+                    lines[1] =
+                            MsgUtil.getMessageOfflinePlayer("signs.stack-buying", player, "" + ((this.getRemainingSpace() != 0) ? this.getRemainingSpace() /this.getItem().getAmount() : 0));
+                }
             } else {
-                lines[1] =
-                        MsgUtil.getMessageOfflinePlayer("signs.buying", player, "" + this.getRemainingSpace());
+                if (this.getRemainingSpace() == -1) {
+                    lines[1] = MsgUtil.getMessageOfflinePlayer("signs.buying", player, "" + MsgUtil.getMessageOfflinePlayer("signs.unlimited", player));
+                } else {
+                    lines[1] =
+                            MsgUtil.getMessageOfflinePlayer("signs.buying", player, "" + this.getRemainingSpace());
+                }
             }
+//            if (this.getRemainingSpace() == -1) {
+//                lines[1] =
+//                        MsgUtil.getMessageOfflinePlayer(
+//                                "signs.buying",
+//                                player,
+//                                "" + MsgUtil.getMessageOfflinePlayer("signs.unlimited", player));
+//            } else {
+//                lines[1] =
+//                        MsgUtil.getMessageOfflinePlayer("signs.buying", player, "" + this.getRemainingSpace());
+//            }
         }
         lines[2] =
                 MsgUtil.getMessageOfflinePlayer(
                         "signs.item", player, Util.getItemStackName(this.getItem()));
-        if (plugin.getConfig().getBoolean("shop.allow-stacks") && this.getItem().getAmount() > 1) { //FIXME: A trash impl, need use a better way
-            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.stack-price", player, this.getPrice().getPriceString(this.getItem().getAmount()));
+        if (plugin.isAllowStack() && this.getItem().getAmount() > 1) { //FIXME: A trash impl, need use a better way
+            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.stack-price", player, Util.format(this.getPrice()));
         } else {
-            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.price", player, this.getPrice().getPriceString(1));
+            lines[3] = MsgUtil.getMessageOfflinePlayer("signs.price", player, Util.format(this.getPrice()));
 
         }
         this.setSignText(lines);
@@ -669,7 +699,8 @@ public class ContainerShop implements Shop {
     }
 
     @Override
-    public void setModerator(ShopModerator shopModerator) {
+    public void setModerator(@NotNull ShopModerator shopModerator) {
+        this.lastChangedAt = System.currentTimeMillis();
         this.moderator = shopModerator;
         update();
         Bukkit.getPluginManager().callEvent(new ShopModeratorChangedEvent(this, this.moderator));
@@ -716,6 +747,7 @@ public class ContainerShop implements Shop {
             Util.debugLog("A plugin cancelled the price change event.");
             return;
         }
+        this.lastChangedAt = System.currentTimeMillis();
         this.price.update(price);
         setSignText();
         update();
@@ -759,6 +791,7 @@ public class ContainerShop implements Shop {
      */
     @Override
     public void setShopType(@NotNull ShopType shopType) {
+        this.lastChangedAt = System.currentTimeMillis();
         this.shopType = shopType;
         this.setSignText();
         update();
@@ -885,6 +918,16 @@ public class ContainerShop implements Shop {
     @Override
     public @Nullable DisplayItem getDisplay() {
         return this.displayItem;
+    }
+
+    /**
+     * Gets the shop last changes timestamp
+     *
+     * @return The time stamp
+     */
+    @Override
+    public long getLastChangedAt() {
+        return this.lastChangedAt;
     }
 
     /**

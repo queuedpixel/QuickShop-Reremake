@@ -57,32 +57,26 @@ public class SubCommand_Staff implements CommandProcesser {
             MsgUtil.sendMessage(sender,MsgUtil.getMessage("not-looking-at-shop", sender));
             return;
         }
-
+        boolean hitShop = false;
         while (bIt.hasNext()) {
             final Block b = bIt.next();
             final Shop shop = plugin.getShopManager().getShop(b.getLocation());
-
             if (shop == null || !shop.getModerator().isModerator(((Player) sender).getUniqueId())) {
                 continue;
             }
-
+            hitShop = true;
             switch (cmdArg.length) {
                 case 0:
                     MsgUtil.sendMessage(sender,MsgUtil.getMessage("command.wrong-args", sender));
                     return;
                 case 1:
                     switch (cmdArg[0]) {
-                        case "add":
-                        case "del":
-                            MsgUtil.sendMessage(sender,MsgUtil.getMessage("command.wrong-args", sender));
-                            return;
                         case "clear":
                             shop.clearStaffs();
                             MsgUtil.sendMessage(sender,MsgUtil.getMessage("shop-staff-cleared", sender));
                             return;
                         case "list":
                             final List<UUID> staffs = shop.getStaffs();
-
                             if (staffs.isEmpty()) {
                                 MsgUtil.sendMessage(sender,
                                     ChatColor.GREEN
@@ -90,20 +84,19 @@ public class SubCommand_Staff implements CommandProcesser {
                                         + "Empty");
                                 return;
                             }
-
                             for (UUID uuid : staffs) {
                                 MsgUtil.sendMessage(sender,
                                     ChatColor.GREEN
                                         + MsgUtil.getMessage("tableformat.left_begin", sender)
                                         + Bukkit.getOfflinePlayer(uuid).getName());
                             }
-
                             return;
+                        case "add":
+                        case "del":
                         default:
                             MsgUtil.sendMessage(sender,MsgUtil.getMessage("command.wrong-args", sender));
+                            return;
                     }
-
-                    break;
                 case 2:
                     final OfflinePlayer offlinePlayer = plugin.getServer().getOfflinePlayer(cmdArg[1]);
                     String offlinePlayerName = offlinePlayer.getName();
@@ -131,6 +124,10 @@ public class SubCommand_Staff implements CommandProcesser {
                     Util.debugLog("No any args matched");
                     break;
             }
+        }
+        if(!hitShop){
+            MsgUtil.sendMessage(sender,MsgUtil.getMessage("not-looking-at-shop", sender));
+            return;
         }
     }
 

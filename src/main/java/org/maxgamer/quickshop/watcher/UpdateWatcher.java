@@ -19,8 +19,6 @@
 
 package org.maxgamer.quickshop.watcher;
 
-import java.util.List;
-import java.util.Random;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -35,6 +33,9 @@ import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.UpdateInfomation;
 import org.maxgamer.quickshop.util.Updater;
+
+import java.util.List;
+import java.util.Random;
 
 public class UpdateWatcher implements Listener {
     public static boolean hasNewUpdate = false;
@@ -51,30 +52,25 @@ public class UpdateWatcher implements Listener {
 
     public static void init() {
         cronTask =
-            new BukkitRunnable() {
+                new BukkitRunnable() {
 
-                @Override
-                public void run() {
-                    info = Updater.checkUpdate();
+                    @Override
+                    public void run() {
+                        info = Updater.checkUpdate();
 
-                    if (info.getVersion() == null) {
-                        hasNewUpdate = false;
-                        return;
-                    }
+                        if (Updater.hasUpdate(info.getVersion())) {
+                            hasNewUpdate = true;
+                        } else {
+                            return;
+                        }
 
-                    if (info.getVersion().equals(QuickShop.getVersion())) {
-                        hasNewUpdate = false;
-                        return;
-                    }
-                    hasNewUpdate = true;
-
-                    if (!info.isBeta()) {
-                        QuickShop.instance
-                            .getLogger()
-                            .info(
-                                "A new version of QuickShop has been released! [" + info.getVersion() + "]");
-                        QuickShop.instance
-                            .getLogger()
+                        if (!info.isBeta()) {
+                            QuickShop.instance
+                                    .getLogger()
+                                    .info(
+                                            "A new version of QuickShop has been released! [" + info.getVersion() + "]");
+                            QuickShop.instance
+                                    .getLogger()
                             .info("Update here: https://www.spigotmc.org/resources/62575/");
 
                         Bukkit.getOnlinePlayers()

@@ -23,8 +23,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import org.maxgamer.quickshop.command.CommandProcesser;
 import org.maxgamer.quickshop.QuickShop;
+import org.maxgamer.quickshop.command.CommandProcesser;
 import org.maxgamer.quickshop.util.MsgUtil;
 import org.maxgamer.quickshop.util.UpdateInfomation;
 import org.maxgamer.quickshop.util.Updater;
@@ -53,8 +53,8 @@ public class SubCommand_Update implements CommandProcesser {
                     return;
                 }
 
-                if (updateVersion.equals(plugin.getDescription().getVersion())) {
-                    MsgUtil.sendMessage(sender,ChatColor.GREEN + "No updates can update now.");
+                if (!Updater.hasUpdate(updateVersion)) {
+                    MsgUtil.sendMessage(sender, ChatColor.GREEN + "No updates can update now.");
                     return;
                 }
 

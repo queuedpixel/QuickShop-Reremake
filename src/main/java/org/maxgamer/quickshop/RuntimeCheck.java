@@ -65,11 +65,5 @@ public class RuntimeCheck {
                 throw new RuntimeException("Snapshot cannot run when dev-mode is false in the config");
             }
         }
-        plugin.getLogger().info("Checking the tax account infos...");
-        String taxAccount = plugin.getConfig().getString("tax-account", "tax");
-        //noinspection ConstantConditions
-        if (!Bukkit.getOfflinePlayer(taxAccount).hasPlayedBefore()) {
-            plugin.getLogger().warning("Tax account's player never played server before, that may cause server lagg or economy system error, you should change that name.");
-        }
     }
 }

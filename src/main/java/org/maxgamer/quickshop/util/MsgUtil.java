@@ -875,14 +875,7 @@ public class MsgUtil {
         chatSheetPrinter.printLine(MsgUtil.getMessage("menu.shop-information", p));
         chatSheetPrinter.printLine(MsgUtil.getMessage("menu.owner", p, shop.ownerName()));
         // Enabled
-        sendItemholochat(
-                shop,
-                items,
-                p,
-                ChatColor.DARK_PURPLE
-                        + MsgUtil.getMessage("tableformat.left_begin", p)
-                        + " "
-                        + MsgUtil.getMessage("menu.item", p, Util.getItemStackName(items)));
+        sendItemholochat(shop, items, p, ChatColor.DARK_PURPLE + MsgUtil.getMessage("tableformat.left_begin", p) + " " + MsgUtil.getMessage("menu.item", p, Util.getItemStackName(items)));
         if (Util.isTool(items.getType())) {
             chatSheetPrinter.printLine(
                     MsgUtil.getMessage("menu.damage-percent-remaining", p, Util.getToolPercentage(items)));
@@ -904,12 +897,11 @@ public class MsgUtil {
                         MsgUtil.getMessage("menu.space", p, "" + shop.getRemainingSpace()));
             }
         }
-        chatSheetPrinter.printLine(
-                MsgUtil.getMessage(
-                        "menu.price-per",
-                        p,
-                        Util.getItemStackName(shop.getItem()),
-                        Util.format(shop.getPrice())));
+        if(shop.getItem().getAmount() == 1) {
+            chatSheetPrinter.printLine(MsgUtil.getMessage("menu.price-per", p, Util.getItemStackName(shop.getItem()), Util.format(shop.getPrice())));
+        }else{
+            chatSheetPrinter.printLine(MsgUtil.getMessage("menu.price-per-stack", p, Util.getItemStackName(shop.getItem()), Util.format(shop.getPrice())));
+        }
         if (shop.isBuying()) {
             chatSheetPrinter.printLine(MsgUtil.getMessage("menu.this-shop-is-buying", p));
         } else {
@@ -1363,6 +1355,20 @@ public class MsgUtil {
             setAndUpdate("lang.help-us", "&a[Help Us Improve Translation Quality]");
             setAndUpdate("language-version", 32);
             selectedVersion = 32;
+        }
+        if (selectedVersion == 32) {
+            setAndUpdate("signs.stack-selling", "Selling {0}");
+            setAndUpdate("signs.stack-buying", "Buying {0}");
+            setAndUpdate("menu.price-per-stack", "&aPrice per bulk &e{0} - {1}");
+            setAndUpdate("menu.shop-stack", "&aStack Amount: &e{0}");
+            setAndUpdate("language-version", 33);
+            selectedVersion = 33;
+        }
+        if (selectedVersion == 33) {
+            setAndUpdate("integrations-check-failed-create", "Integrations denied the shop creation");
+            setAndUpdate("integrations-check-failed-trade", "Integrations denied the shop trade");
+            setAndUpdate("language-version", 34);
+            selectedVersion = 34;
         }
 
         messagei18n.save();
