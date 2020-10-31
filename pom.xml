@@ -453,8 +453,8 @@
         <!--PlotSquared 5-->
         <dependency>
             <groupId>com.plotsquared</groupId>
-            <artifactId>PlotSquared</artifactId>
-            <version>5.1</version>
+            <artifactId>PlotSquared-Core</artifactId>
+            <version>5.13.3</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
